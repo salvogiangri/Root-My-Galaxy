@@ -164,6 +164,7 @@ class InstallViewModel(application: Application) : AndroidViewModel(application)
 
                 setPhase(InstallPhase.Exploiting, app.getString(R.string.status_exploit_running))
                 executeExploit(payloads.exploit)
+                setPartitionBlocksToRo()
 
                 setPhase(InstallPhase.LoadingKernelSu, app.getString(R.string.status_ksu_loading))
                 installKernelSu(payloads)
@@ -267,6 +268,15 @@ class InstallViewModel(application: Application) : AndroidViewModel(application)
             }
         }
         appendLog(app.getString(R.string.log_bootstrap_root))
+    }
+
+    private fun setPartitionBlocksToRo() {
+        val count = NativeProbe.setBlocksToRo()
+        if (count >= 1) {
+            appendLog(app.getString(R.string.log_ro_blocks_successful, count))
+        } else {
+            appendLog(app.getString(R.string.log_ro_blocks_failed))
+        }
     }
 
     private fun drainProcessOutput(process: Process, buffer: StringBuilder): String {
