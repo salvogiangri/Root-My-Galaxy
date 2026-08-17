@@ -271,7 +271,8 @@ class InstallViewModel(application: Application) : AndroidViewModel(application)
     }
 
     private fun setPartitionBlocksToRo() {
-        val count = NativeProbe.setBlocksToRo()
+        val script = app.assets.open("set_ro_blocks.sh").bufferedReader().use { it.readText() }
+        val count = runHelper("-c", script).output.trim().toIntOrNull() ?: 0
         if (count >= 1) {
             appendLog(app.getString(R.string.log_ro_blocks_successful, count))
         } else {
